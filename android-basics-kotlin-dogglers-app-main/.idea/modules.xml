@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/android-basics-kotlin-dogglers-app-main.iml" filepath="$PROJECT_DIR$/.idea/modules/android-basics-kotlin-dogglers-app-main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Dogglers.iml" filepath="$PROJECT_DIR$/.idea/modules/Dogglers.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Dogglers.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Dogglers.app.iml" />
     </modules>
   </component>
 </project>
