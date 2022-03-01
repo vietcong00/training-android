@@ -29,4 +29,6 @@
     <string name="order_summary">Order Summary</string>
     <string name="submit">Submit Order</string>
     <string name="submit_order">Order Submitted!</string>
+    <string name="format_price">$%.2fđ</string>
+
 </resources>

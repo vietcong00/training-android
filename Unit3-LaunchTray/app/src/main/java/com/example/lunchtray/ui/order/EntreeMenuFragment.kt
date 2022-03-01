@@ -15,12 +15,18 @@
  */
 package com.example.lunchtray.ui.order
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.example.lunchtray.R
 import com.example.lunchtray.databinding.FragmentEntreeMenuBinding
 import com.example.lunchtray.model.OrderViewModel
 
@@ -33,9 +39,11 @@ class EntreeMenuFragment : Fragment() {
     // This property is non-null between the onCreateView() and onDestroyView() lifecycle callbacks,
     // when the view hierarchy is attached to the fragment.
     private var _binding: FragmentEntreeMenuBinding? = null
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
     // Use the 'by activityViewModels()' Kotlin property delegate from the fragment-ktx artifact
     private val sharedViewModel: OrderViewModel by activityViewModels()
 
@@ -52,12 +60,23 @@ class EntreeMenuFragment : Fragment() {
         return root
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = sharedViewModel
             // TODO: initialize the EntreeMenuFragment variables
+            nextButton.setOnClickListener {
+                goToNextScreen()
+            }
+            cancelButton.setOnClickListener {
+                cancelOrder()
+            }
+            entreeOptions.setOnCheckedChangeListener { position, checkedId ->
+                var radioButton: RadioButton? = activity?.findViewById(checkedId)
+                this.viewModel?.setEntree(radioButton?.text as String)
+            }
         }
     }
 
@@ -66,6 +85,7 @@ class EntreeMenuFragment : Fragment() {
      */
     fun goToNextScreen() {
         // TODO: Navigate to the SideMenuFragment
+        findNavController().navigate(R.id.action_entreeMenuFragment_to_sideMenuFragment)
     }
 
     /**
@@ -74,6 +94,9 @@ class EntreeMenuFragment : Fragment() {
     fun cancelOrder() {
         // TODO: Reset order in view model
         // TODO: Navigate back to the [StartFragment] to start over
+        findNavController().navigate(R.id.action_entreeMenuFragment_to_startOrderFragment)
+        sharedViewModel.resetOrder()
+
     }
 
     /**

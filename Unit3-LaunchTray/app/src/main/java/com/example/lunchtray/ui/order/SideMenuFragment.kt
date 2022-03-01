@@ -19,8 +19,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.example.lunchtray.R
 import com.example.lunchtray.databinding.FragmentSideMenuBinding
 import com.example.lunchtray.model.OrderViewModel
 
@@ -58,14 +61,25 @@ class SideMenuFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             viewModel = sharedViewModel
             // TODO: initialize the SideMenuFragment variables
+            nextButton.setOnClickListener {
+                goToNextScreen()
+            }
+            cancelButton.setOnClickListener{
+                cancelOrder()
+            }
+            sideOptions.setOnCheckedChangeListener { position, checkedId ->
+                var radioButton: RadioButton? = activity?.findViewById(checkedId)
+                this.viewModel?.setSide(radioButton?.text as String)
+            }
         }
     }
 
     /**
-     * Navigate to the accompaniments menu fragment
+     * Navigate to the side menu fragment.
      */
     fun goToNextScreen() {
-        // TODO: Navigate to the AccompanimentMenuFragment
+        // TODO: Navigate to the SideMenuFragment
+        findNavController().navigate(R.id.action_sideMenuFragment_to_accompanimentMenuFragment)
     }
 
     /**
@@ -74,6 +88,9 @@ class SideMenuFragment : Fragment() {
     fun cancelOrder() {
         // TODO: Reset order in view model
         // TODO: Navigate back to the [StartFragment] to start over
+        findNavController().navigate(R.id.action_sideMenuFragment_to_startOrderFragment)
+        sharedViewModel.resetOrder()
+
     }
 
     /**
