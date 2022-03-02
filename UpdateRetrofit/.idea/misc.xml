@@ -3,7 +3,21 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/tient/AndroidStudioProjects/UpdateRetrofit/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_accent_red_continue_bg.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_accent_red_continue_bg_active.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_accent_red_continue_bg_press.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_primary_bg.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_primary_bg_active.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_primary_bg_disable.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_primary_bg_press.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_secondary_bg.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_secondary_bg_active.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_secondary_bg_disable.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/drawable/button_secondary_bg_press.xml" value="0.197" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/layout/activity_main.xml" value="0.28888888888888886" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/layout/fragment_detail.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/layout/fragment_overview.xml" value="0.28888888888888886" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/UpdateRetrofit/app/src/main/res/layout/grid_view_item.xml" value="0.221875" />
       </map>
     </option>
   </component>
