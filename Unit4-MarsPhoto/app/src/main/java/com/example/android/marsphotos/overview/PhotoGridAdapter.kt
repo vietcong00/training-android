@@ -23,10 +23,7 @@ class PhotoGridAdapter : ListAdapter<MarsPhoto,
         }
     }
 
-    class MarsPhotoViewHolder(
-        private var binding:
-        GridViewItemBinding
-    ) :
+    class MarsPhotoViewHolder(private var binding: GridViewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(MarsPhoto: MarsPhoto) {
             binding.photo = MarsPhoto
@@ -34,12 +31,12 @@ class PhotoGridAdapter : ListAdapter<MarsPhoto,
         }
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): MarsPhotoViewHolder {
-        return MarsPhotoViewHolder(GridViewItemBinding.inflate(
-            LayoutInflater.from(parent.context)))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarsPhotoViewHolder {
+        return MarsPhotoViewHolder(
+            GridViewItemBinding.inflate(
+                LayoutInflater.from(parent.context)
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: MarsPhotoViewHolder, position: Int) {
