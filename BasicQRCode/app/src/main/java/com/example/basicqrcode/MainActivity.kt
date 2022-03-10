@@ -1,10 +1,14 @@
 package com.example.basicqrcode
 
-import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.hardware.Camera
+import android.net.Uri
 import android.os.Bundle
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import android.util.Log
 import android.view.View
 import android.view.View.OnClickListener
@@ -22,8 +26,10 @@ import com.example.basicqrcode.camera.WorkflowModel.WorkflowState
 import com.example.basicqrcode.settings.SettingsActivity
 import com.google.android.material.chip.Chip
 import com.google.common.base.Objects
+import com.google.mlkit.vision.barcode.common.Barcode
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
+
 
 /** Demonstrates the barcode scanning workflow using camera preview.  */
 class MainActivity : AppCompatActivity(), OnClickListener {
@@ -61,13 +67,15 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         settingsButton = findViewById<View>(R.id.settings_button).apply {
             setOnClickListener(this@MainActivity)
         }
-
         setUpWorkflowModel()
     }
 
     override fun onResume() {
         super.onResume()
 
+        if (!Utils.allPermissionsGranted(this)) {
+            Utils.requestRuntimePermissions(this)
+        }
         workflowModel?.markCameraFrozen()
         settingsButton?.isEnabled = true
         currentWorkflowState = WorkflowState.NOT_STARTED
@@ -165,7 +173,8 @@ class MainActivity : AppCompatActivity(), OnClickListener {
                 else -> promptChip?.visibility = View.GONE
             }
 
-            val shouldPlayPromptChipEnteringAnimation = wasPromptChipGone && promptChip?.visibility == View.VISIBLE
+            val shouldPlayPromptChipEnteringAnimation =
+                wasPromptChipGone && promptChip?.visibility == View.VISIBLE
             promptChipAnimator?.let {
                 if (shouldPlayPromptChipEnteringAnimation && !it.isRunning) it.start()
             }
@@ -173,9 +182,192 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
         workflowModel?.detectedBarcode?.observe(this, Observer { barcode ->
             if (barcode != null) {
+//            if (false) {
                 val barcodeFieldList = ArrayList<BarcodeField>()
-                barcodeFieldList.add(BarcodeField("Raw Value", barcode.rawValue ?: ""))
-                BarcodeResultFragment.show(supportFragmentManager, barcodeFieldList)
+                val valueType = barcode.valueType
+                var valueName = ""
+                var nameButtonAction = ""
+                when (valueType) {
+                    // QR Code type Email
+                    Barcode.TYPE_EMAIL -> {
+                        val rawValue = barcode.email!!
+                        nameButtonAction = "Open Email"
+                        barcodeFieldList.add(BarcodeField("Type QR Code", "Email"))
+                        barcodeFieldList.add(BarcodeField("Address", rawValue.address ?: ""))
+                        barcodeFieldList.add(BarcodeField("Subject", rawValue.subject ?: ""))
+                        barcodeFieldList.add(BarcodeField("Body", rawValue.body ?: ""))
+
+                        //Open Email app
+                        val emailIntent = Intent(Intent.ACTION_SEND);
+
+                        emailIntent.type = "plain/text";
+                        emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(rawValue.address));
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, rawValue.subject);
+                        emailIntent.putExtra(Intent.EXTRA_TEXT, rawValue.body);
+
+                        this.startActivity(Intent.createChooser(emailIntent, "Open With"));
+                    }
+
+                    // QR Code type Message
+                    Barcode.TYPE_SMS -> {
+                        val rawValue = barcode.sms!!
+                        Log.i("tesss", "sms: " + barcode.rawValue)
+                        barcodeFieldList.add(BarcodeField("Type QR Code", "Event"))
+                        barcodeFieldList.add(
+                            BarcodeField(
+                                "Phone Number",
+                                rawValue.phoneNumber ?: ""
+                            )
+                        )
+                        barcodeFieldList.add(BarcodeField("Message", rawValue.message ?: ""))
+
+                        //Open SMS app
+                        val smsIntent = Intent(Intent.ACTION_VIEW, Uri.parse(barcode.rawValue))
+                        smsIntent.type = "vnd.android-dir/mms-sms"
+                        smsIntent.putExtra("address", rawValue.phoneNumber)
+                        smsIntent.putExtra("sms_body", rawValue.message)
+                        startActivity(smsIntent);
+
+                    }
+
+                    // QR Code type Contact
+                    Barcode.TYPE_CONTACT_INFO -> {
+                        val rawValue = barcode.contactInfo!!
+                        Log.i("tesss", "Contact: " + barcode.rawValue)
+                        barcodeFieldList.add(BarcodeField("Type QR Code", "Contact"))
+                        barcodeFieldList.add(
+                            BarcodeField(
+                                "Name",
+                                rawValue.name!!.formattedName ?: ""
+                            )
+                        )
+                        barcodeFieldList.add(BarcodeField("Phone", rawValue.phones[0].number ?: ""))
+                        barcodeFieldList.add(BarcodeField("Web1", rawValue.urls[0] ?: ""))
+                        barcodeFieldList.add(BarcodeField("Web2", rawValue.urls[1] ?: ""))
+
+                        //Open Contact app
+                        val smsIntent = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
+                        startActivity(smsIntent);
+                    }
+
+                    // QR Code type URL, Facebook, Twitter, Instagram
+                    Barcode.TYPE_URL -> {
+                        val rawValue = barcode.url!!
+                        Log.i("tesss", "URL: " + barcode.rawValue)
+                        barcodeFieldList.add(BarcodeField("Type QR Code", "URL"))
+                        barcodeFieldList.add(BarcodeField("Title", rawValue.title ?: ""))
+                        barcodeFieldList.add(BarcodeField("URL", rawValue.url ?: ""))
+
+                        //Open Facebook app, Twitter app, Instagram app or Browser
+                        try {
+                            val applicationInfo: ApplicationInfo =
+                                packageManager.getApplicationInfo("com.facebook.katana", 0)
+                            if (applicationInfo.enabled) {
+                                var uri = "fb://facewebmodal/f?href=" + rawValue.url
+                                val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                                this.startActivity(Intent.createChooser(webIntent, "Open With"));
+                            }
+                        } catch (ignored: PackageManager.NameNotFoundException) {
+                            val webIntent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse(rawValue.url)
+                            )
+                            this.startActivity(Intent.createChooser(webIntent, "Open With"));
+                        }
+                    }
+
+                    // QR Code type Wifi
+                    Barcode.TYPE_WIFI -> {
+                        val rawValue = barcode.wifi!!
+                        Log.i("tesss", "Wifi: " + barcode.rawValue)
+                        barcodeFieldList.add(BarcodeField("Type QR Code", "WiFi"))
+                        barcodeFieldList.add(BarcodeField("SSID", rawValue.ssid ?: ""))
+                        barcodeFieldList.add(BarcodeField("Password", rawValue.password ?: ""))
+                        barcodeFieldList.add(
+                            BarcodeField(
+                                "Encryption Type",
+                                rawValue.encryptionType.toString() ?: ""
+                            )
+                        )
+
+                    }
+
+                    // QR Code type Location
+                    Barcode.TYPE_GEO -> {
+                        val rawValue = barcode.geoPoint!!
+                        Log.i("tesss", "Geo: " + barcode.rawValue)
+                        barcodeFieldList.add(BarcodeField("Type QR Code", "Geo"))
+                        barcodeFieldList.add(BarcodeField("Lat", rawValue.lat.toString() ?: ""))
+                        barcodeFieldList.add(BarcodeField("Lng", rawValue.lng.toString() ?: ""))
+                    }
+
+                    // QR Code type Event
+                    Barcode.TYPE_CALENDAR_EVENT -> {
+                        val rawValue = barcode.calendarEvent!!
+                        Log.i("tesss", "event: " + barcode.rawValue)
+                        barcodeFieldList.add(BarcodeField("Type QR Code", "Event"))
+                        barcodeFieldList.add(BarcodeField("Summary", rawValue.summary ?: ""))
+                        barcodeFieldList.add(
+                            BarcodeField(
+                                "Description",
+                                rawValue.description ?: ""
+                            )
+                        )
+                        barcodeFieldList.add(BarcodeField("location", rawValue.location ?: ""))
+                        barcodeFieldList.add(
+                            BarcodeField(
+                                "Start Day",
+                                rawValue.start!!.day.toString() ?: ""
+                            )
+                        )
+                        barcodeFieldList.add(
+                            BarcodeField(
+                                "End Day",
+                                rawValue.end!!.day.toString() ?: ""
+                            )
+                        )
+
+                        // Open Calendar app
+                        val start = rawValue.start!!
+                        val end = rawValue.end!!
+
+                        val intent = Intent(
+                            Intent.ACTION_INSERT,
+                            CalendarContract.Events.CONTENT_URI
+                        ).apply {
+                            val beginTime: Calendar = Calendar.getInstance().apply {
+                                set(
+                                    start.year,
+                                    start.month - 1,
+                                    start.day,
+                                    start.hours,
+                                    start.minutes
+                                )
+                            }
+                            val endTime = Calendar.getInstance().apply {
+                                set(end.year, end.month - 1, end.day, end.hours, end.minutes)
+                            }
+                            putExtra(
+                                CalendarContract.EXTRA_EVENT_BEGIN_TIME,
+                                beginTime.timeInMillis
+                            )
+                            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.timeInMillis)
+                            putExtra(CalendarContract.Events.TITLE, rawValue.summary)
+                            putExtra(CalendarContract.Events.EVENT_LOCATION, rawValue.location)
+                        }
+
+                        startActivity(intent)
+                    }
+
+                    // QR Code type Text
+                    Barcode.TYPE_TEXT -> {
+                        val rawValue = barcode.rawValue!!
+                        Log.i("tesss", "Text: " + barcode.rawValue)
+                        barcodeFieldList.add(BarcodeField("Type QR Code", "Text"))
+                        barcodeFieldList.add(BarcodeField("Note", rawValue ?: ""))
+                    }
+                }
+                BarcodeResultFragment.show(supportFragmentManager, valueName, barcodeFieldList)
             }
         })
     }

@@ -1,10 +1,14 @@
 package com.example.basicqrcode
 
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.*
 import android.hardware.Camera
 import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.basicqrcode.camera.CameraSizePair
 import com.google.mlkit.vision.common.InputImage
 import java.io.ByteArrayOutputStream
@@ -25,6 +29,33 @@ object Utils {
     fun isPortraitMode(context: Context): Boolean =
         context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
+    internal fun requestRuntimePermissions(activity: Activity) {
+
+        val allNeededPermissions = getRequiredPermissions(activity).filter {
+            ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (allNeededPermissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                activity, allNeededPermissions.toTypedArray(), /* requestCode= */ 0
+            )
+        }
+    }
+
+    internal fun allPermissionsGranted(context: Context): Boolean = getRequiredPermissions(
+        context
+    )
+        .all { ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED }
+
+    private fun getRequiredPermissions(context: Context): Array<String> {
+        return try {
+            val info = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
+            val ps = info.requestedPermissions
+            if (ps != null && ps.isNotEmpty()) ps else arrayOf()
+        } catch (e: Exception) {
+            arrayOf()
+        }
+    }
     /**
      * Generates a list of acceptable preview sizes. Preview sizes are not acceptable if there is not
      * a corresponding picture size of the same aspect ratio. If there is a corresponding picture size

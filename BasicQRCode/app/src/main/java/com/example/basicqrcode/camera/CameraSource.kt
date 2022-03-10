@@ -253,6 +253,7 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
      *
      * @param parameters the camera parameters for which to set the rotation.
      */
+
     private fun setRotation(camera: Camera, parameters: Parameters) {
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val degrees = when (val deviceRotation = windowManager.defaultDisplay.rotation) {

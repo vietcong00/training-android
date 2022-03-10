@@ -8,10 +8,11 @@
         <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/BasicQRCode/app/src/main/res/drawable/logo_mlkit.xml" value="0.1365" />
         <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/BasicQRCode/app/src/main/res/layout/activity_main.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/BasicQRCode/app/src/main/res/layout/activity_settings.xml" value="0.1" />
-        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/BasicQRCode/app/src/main/res/layout/barcode_bottom_sheet.xml" value="0.103125" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/BasicQRCode/app/src/main/res/layout/barcode_bottom_sheet.xml" value="0.25" />
         <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/BasicQRCode/app/src/main/res/layout/barcode_field.xml" value="0.1" />
         <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/BasicQRCode/app/src/main/res/layout/camera_preview_overlay.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/BasicQRCode/app/src/main/res/layout/top_action_bar_in_live_camera.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/tient/AndroidStudioProjects/training-android/BasicQRCode/app/src/main/res/xml/preferences.xml" value="0.1" />
       </map>
     </option>
   </component>
